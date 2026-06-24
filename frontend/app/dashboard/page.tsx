@@ -9,6 +9,7 @@ import Cookies from "js-cookie";
 
 export default function Dashboard() {
   const [sets, setSets] = useState<any[]>([]);
+  const [role, setRole] = useState<string>("user");
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
   const [title, setTitle] = useState("");
@@ -23,8 +24,14 @@ export default function Dashboard() {
 
   const fetchSets = async () => {
     try {
-      const res = await api.get("/flashcards/sets");
-      setSets(res.data);
+      const [setsRes, userRes] = await Promise.all([
+        api.get("/flashcards/sets"),
+        api.get("/auth/me").catch(() => null)
+      ]);
+      setSets(setsRes.data);
+      if (userRes) {
+        setRole(userRes.data.role);
+      }
     } catch (err: any) {
       if (err.response?.status === 401) {
         router.push("/login");
@@ -78,9 +85,19 @@ export default function Dashboard() {
       <div className="max-w-7xl mx-auto relative z-10">
         <header className="flex justify-between items-center mb-12 p-6 rounded-3xl glass shadow-[0_8px_32px_rgba(0,0,0,0.3)]">
           <h1 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400 tracking-tight">Dashboard</h1>
-          <button onClick={logout} className="text-slate-300 hover:text-white flex items-center gap-2 transition-colors bg-slate-800 hover:bg-slate-700 px-4 py-2 rounded-xl">
-            <LogOut size={18} /> Logout
-          </button>
+          <div className="flex items-center gap-4">
+            {role === "admin" && (
+              <button 
+                onClick={() => router.push("/admin")} 
+                className="text-white hover:text-purple-100 flex items-center gap-2 transition-all bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 px-4 py-2.5 rounded-xl shadow-[0_0_15px_rgba(168,85,247,0.4)] hover:shadow-[0_0_25px_rgba(168,85,247,0.6)] font-semibold text-sm transform hover:-translate-y-0.5"
+              >
+                Admin Console
+              </button>
+            )}
+            <button onClick={logout} className="text-slate-300 hover:text-white flex items-center gap-2 transition-colors bg-slate-800 hover:bg-slate-700 px-4 py-2 rounded-xl">
+              <LogOut size={18} /> Logout
+            </button>
+          </div>
         </header>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
