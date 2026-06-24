@@ -42,8 +42,3 @@ The backend will run at `http://localhost:8000`. API documentation is available 
    ```
 The frontend will run at `http://localhost:3000`.
 
-## Admin Account
-You can log in with the admin credentials provided in the instructions:
-- **Email**: shankarm1612@gmail.com
-- **Password**: Sathya@1612
-(Note: You need to register this account first if the database is empty. Registering with this exact email will automatically grant Admin privileges).
